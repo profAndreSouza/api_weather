@@ -1,3 +1,4 @@
+from bible_verse import main
 from datetime import datetime
 from random import randrange
 from django.views import View
@@ -7,9 +8,10 @@ from .repositories import WeatherRepository
 
 class WeatherView(View):
     def get(self, request):
+        verse = main.get_bible_verse()
         repository = WeatherRepository(collectionName='weathers')
         weathers = repository.getAll()
-        return render(request, "home.html", {"weathers":weathers})
+        return render(request, "home.html", {"weathers":weathers, "verse":verse})
     
 
 class WeatherGenerate(View):
