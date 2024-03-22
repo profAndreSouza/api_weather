@@ -1,0 +1,32 @@
+{% extends "main.html" %}
+
+{% block verse%}
+{{ verse }}
+{% endblock %}
+
+{% block content %}
+
+    <h1>Insert Climate Data</h1>
+
+    <div class="d-flex justify-content-start flex-wrap">
+
+        <form action="{% url 'Weather Insert' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="col-md-12 p-2">
+                <div class="card">
+                    <div class="card-body">
+                        {% for field in form %}
+                        <p class="card-text">   
+                        {{ field.label }}: {{ field }}
+                        </p>
+                        {% endfor %}
+                    </div>
+                    <div class="card-footer">
+                        <input type="submit" value="Save">
+                    </div>
+                </div>
+            </div>
+        </form>
+
+    </div>
+{% endblock content %}
