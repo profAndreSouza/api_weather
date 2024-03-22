@@ -6,7 +6,7 @@
 
 {% block content %}
 
-    <h1>Temperaturas</h1>
+    <h1>Climate Data</h1>
 
     <div class="d-flex justify-content-start flex-wrap">
 
@@ -14,12 +14,15 @@
         <div class="col-md-4 p-2">
           <div class="card">
             <div class="card-header">
-                Temperatura: {{ weather.temperature }}
+                Temperature: {{ weather.temperature }}
             </div>
             <div class="card-body">
                 <p class="card-text">
-                    Data: {{ weather.date }} <br />
-                    Cidade
+                    Date: {{ weather.date }} <br />
+                    City: {{ weather.city }} <br />
+                    Atmospheric Pressure: {{ weather.atmosphericPressure }} <br />
+                    Humidity: {{ weather.humidity }} <br />
+                    Weather: {{ weather.weather }}
                 </p>
             </div>
           </div>

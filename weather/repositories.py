@@ -26,3 +26,6 @@ class WeatherRepository:
     
     def insert(self, document):
         self.getColletion().insert_one(document)
+
+    def deleteAll(self):
+        self.getColletion().delete_many({})
