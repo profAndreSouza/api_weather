@@ -5,8 +5,13 @@
 {% endblock %}
 
 {% block content %}
-
     <h1>Climate Data</h1>
+
+    {% if error %}
+    <div class="alert alert-danger" role="alert">
+        {{ error }}
+    </div>
+    {% endif %}
 
     <div class="d-flex justify-content-start flex-wrap">
 

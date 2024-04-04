@@ -1,5 +1,7 @@
-from django.conf import settings
 import pymongo
+from pymongo.errors import ConnectionFailure
+from django.conf import settings
+from .exceptions import WeatherException
 
 class WeatherRepository:
 
@@ -9,8 +11,13 @@ class WeatherRepository:
         self.collection = collectionName
 
     def getConnection(self):
-        client = pymongo.MongoClient(
-            getattr(settings, "MONGO_CONNECTION_STRING"))
+        try:
+            client = pymongo.MongoClient(
+                getattr(settings, "MONGO_CONNECTION_STRING")
+            )
+        except ConnectionFailure as e :
+            raise WeatherException(f"Error connecting to database: {e}")
+        
         connection = client[
             getattr(settings, "MONGO_DATABASE_NAME")]
         return connection

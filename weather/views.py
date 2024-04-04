@@ -7,19 +7,26 @@ from .models import WeatherEntity
 from .repositories import WeatherRepository
 from .serializers import WeatherSerializer
 from .forms import WeatherForm
+from .exceptions import WeatherException
 
 class WeatherView(View):
     def get(self, request):
         verse = main.get_bible_verse()
         repository = WeatherRepository(collectionName='weathers')
-        weathers = list(repository.getAll())
-        serializer = WeatherSerializer(data=weathers, many=True)
-        if (serializer.is_valid()):
-            modelWeather = serializer.save()
-            print(serializer.data)
-        else:
-            print(serializer.errors)
-        return render(request, "home.html", {"weathers":modelWeather, "verse":verse})
+        try:
+            weathers = list(repository.getAll())
+            serializer = WeatherSerializer(data=weathers, many=True)
+            if (serializer.is_valid()):
+                modelWeather = serializer.save()
+                print(serializer.data)
+            else:
+                print(serializer.errors)
+            objectReturn = {"weathers":modelWeather, "verse":verse}
+        except WeatherException as e:
+            objectReturn = {"error":e.message, "verse":verse}
+
+        print (objectReturn)
+        return render(request, "home.html", objectReturn)
     
 
 class WeatherGenerate(View):
