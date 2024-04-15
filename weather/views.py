@@ -11,21 +11,23 @@ from .exceptions import WeatherException
 
 class WeatherView(View):
     def get(self, request):
-        verse = main.get_bible_verse()
+        verse = main.get_bible_verse_en()
         repository = WeatherRepository(collectionName='weathers')
         try:
             weathers = list(repository.getAll())
             serializer = WeatherSerializer(data=weathers, many=True)
             if (serializer.is_valid()):
+                # print('Data: ')
+                # print(serializer.data)
                 modelWeather = serializer.save()
-                print(serializer.data)
+                objectReturn = {"weathers":modelWeather, "verse":verse}
             else:
-                print(serializer.errors)
-            objectReturn = {"weathers":modelWeather, "verse":verse}
+                # print('Error: ')
+                # print(serializer.errors)
+                objectReturn = {"error":serializer.errors, "verse":verse}
         except WeatherException as e:
             objectReturn = {"error":e.message, "verse":verse}
-
-        print (objectReturn)
+  
         return render(request, "home.html", objectReturn)
     
 
@@ -65,6 +67,30 @@ class WeatherInsert(View):
             if (serializer.is_valid()):
                 repository = WeatherRepository(collectionName='weathers')
                 repository.insert(serializer.data)
+            else:
+                print(serializer.errors)
+        else:
+            print(weatherForm.errors)
+
+        return redirect('Weather View')
+    
+
+class WeatherEdit(View):
+    def get(self, request, id):
+        repository = WeatherRepository(collectionName='weathers')
+        weather = repository.getByID(id)
+        weatherForm = WeatherForm(initial=weather)
+
+        return render(request, "form_edit.html", {"form":weatherForm, "id":id})
+    
+    def post(self, request, id):
+        weatherForm = WeatherForm(request.POST)
+        if weatherForm.is_valid():
+            serializer = WeatherSerializer(data=weatherForm.data)
+            serializer.id = id
+            if (serializer.is_valid()):
+                repository = WeatherRepository(collectionName='weathers')
+                repository.update(serializer.data, id)
             else:
                 print(serializer.errors)
         else:

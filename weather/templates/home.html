@@ -19,7 +19,16 @@
         <div class="col-md-4 p-2">
           <div class="card">
             <div class="card-header">
-                Temperature: {{ weather.temperature }}
+                <div class="d-flex justify-content-between">
+                    <div>
+                        Temperature: {{ weather.temperature }}
+                    </div>
+                    <div>
+                        <a href="{% url 'Weather Edit' weather.id %}" class="link-dark link-offset-2 link-underline-opacity-0">
+                            <i class="bi bi-pencil-square"></i></a>
+                        <i class="bi bi-trash-fill"></i>
+                    </div>
+                </div>
             </div>
             <div class="card-body">
                 <p class="card-text">
