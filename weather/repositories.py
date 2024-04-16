@@ -51,6 +51,7 @@ class WeatherRepository:
         return document
     
     def insert(self, document):
+        document.pop('id')
         self.getCollection().insert_one(document)
 
     def update(self, document, id):

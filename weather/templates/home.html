@@ -1,5 +1,17 @@
 {% extends "main.html" %}
 
+{% block menu %}
+{% if not errorAuth %}
+<li class="nav-item"><a href="{% url 'Weather Insert' %}" class="nav-link">Insert</a></li>
+<li class="nav-item"><a href="{% url 'Weather Generate' %}" class="nav-link">Generate</a></li>
+<li class="nav-item"><a href="{% url 'Weather Reset' %}" class="nav-link">Reset</a></li>
+<li class="nav-item"><a href="#" class="nav-link">Logout</a></li>
+{% else %}
+<li class="nav-item"><a href="#" class="nav-link">Register</a></li>
+<li class="nav-item"><a href="#" class="nav-link">Login</a></li>
+{% endif %}
+{% endblock %}
+
 {% block verse%}
 {{ verse }}
 {% endblock %}
@@ -18,9 +30,9 @@
         </div>
     </div>
 
-    {% if error %}
+    {% if error or errorAuth %}
     <div class="alert alert-danger" role="alert">
-        {{ error }}
+        {{ error }}{{ errorAuth }}
     </div>
     {% endif %}
 
@@ -35,11 +47,12 @@
                         Temperature: {{ weather.temperature }}
                     </div>
                     <div>
+                        {% if not errorAuth %}
                         <a href="{% url 'Weather Edit' weather.id %}" class="link-dark link-offset-2 link-underline-opacity-0">
                             <i class="bi bi-pencil-square"></i></a>
                         <a href="{% url 'Weather Delete' weather.id %}" class="link-dark link-offset-2 link-underline-opacity-0">
                             <i class="bi bi-trash-fill"></i></a>
-
+                        {% endif %}
                     </div>
                 </div>
             </div>
