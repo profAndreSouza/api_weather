@@ -36,6 +36,14 @@ class WeatherRepository:
             documents.append(document)
         return documents
     
+    def get(self, filter):
+        documents = []
+        for document in self.getCollection().find(filter):
+            id = document.pop('_id')
+            document['id'] = str(id)
+            documents.append(document)
+        return documents
+    
     def getByID(self, id):
         document = self.getCollection().find_one({"_id": ObjectId(id)})
         id = document.pop('_id')
@@ -51,3 +59,7 @@ class WeatherRepository:
 
     def deleteAll(self):
         self.getCollection().delete_many({})
+
+    def deleteByID(self, id):
+        ret = self.getCollection().delete_one({"_id": ObjectId(id)})
+        return ret.deleted_count
