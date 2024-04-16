@@ -1,5 +1,6 @@
 import pymongo
 from pymongo.errors import ConnectionFailure
+from bson import ObjectId
 from django.conf import settings
 from .exceptions import WeatherException
 
@@ -22,17 +23,43 @@ class WeatherRepository:
             getattr(settings, "MONGO_DATABASE_NAME")]
         return connection
     
-    def getColletion(self):
+    def getCollection(self):
         conn = self.getConnection()
         collection = conn[self.collection]
         return collection
     
     def getAll(self):
-        document = self.getColletion().find({})
+        documents = []
+        for document in self.getCollection().find({}):
+            id = document.pop('_id')
+            document['id'] = str(id)
+            documents.append(document)
+        return documents
+    
+    def get(self, filter):
+        documents = []
+        for document in self.getCollection().find(filter):
+            id = document.pop('_id')
+            document['id'] = str(id)
+            documents.append(document)
+        return documents
+    
+    def getByID(self, id):
+        document = self.getCollection().find_one({"_id": ObjectId(id)})
+        id = document.pop('_id')
+        document['id'] = str(id)
         return document
     
     def insert(self, document):
-        self.getColletion().insert_one(document)
+        self.getCollection().insert_one(document)
+
+    def update(self, document, id):
+        self.getCollection().update_one({"_id": ObjectId(id)}, 
+                                       {"$set": document})
 
     def deleteAll(self):
-        self.getColletion().delete_many({})
+        self.getCollection().delete_many({})
+
+    def deleteByID(self, id):
+        ret = self.getCollection().delete_one({"_id": ObjectId(id)})
+        return ret.deleted_count
