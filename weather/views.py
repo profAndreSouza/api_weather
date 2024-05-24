@@ -18,14 +18,14 @@ from .exceptions import WeatherException
 class WeatherView(View):
 
     authenticate = False
+    user = None
 
     def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any):
-        # deverá vir de request
-        token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIiLCJleHAiOjE3MTUwNDY4MTd9.jm7-ng_yy75hjp_TQO_W-0wVhCY9dHYC_NcVjd6QJ40'
+        token = request.COOKIES.get('jwt')
 
         error_code, _ = verifyToken(token)
         if error_code == 0:
-            user = getAuthenticatedUser(token)
+            self.user = getAuthenticatedUser(token)
             self.authenticate = True
         
         return super().dispatch(request, *args, **kwargs)
@@ -37,13 +37,9 @@ class WeatherView(View):
             weathers = list(repository.getAll())
             serializer = WeatherSerializer(data=weathers, many=True)
             if (serializer.is_valid()):
-                # print('Data: ')
-                # print(serializer.data)
                 modelWeather = serializer.save()
                 objectReturn = {"weathers":modelWeather, "verse":verse}
             else:
-                # print('Error: ')
-                # print(serializer.errors)
                 objectReturn = {"error":serializer.errors, "verse":verse}
         except WeatherException as e:
             objectReturn = {"error":e.message, "verse":verse}
@@ -51,9 +47,13 @@ class WeatherView(View):
         if not self.authenticate:
             objectReturn["errorAuth"] = "Usuário não autenticado"
 
-        # print(objectReturn)
-  
-        return render(request, "home.html", objectReturn)
+        response = render(request, "home.html", objectReturn)
+
+        if self.authenticate:
+            newToken = refreshToken(self.user)
+            response.set_cookie('jwt', newToken)
+        
+        return response
     
 
 class WeatherGenerate(View):

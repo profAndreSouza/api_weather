@@ -9,7 +9,7 @@ def authenticate(username, password):
     if username == 'user' and password == 'a1b2c3':
         # deveria retornar com os dados encontrados no banco
         user = UserEntity(username=username, password=password)
-        print(user)
+        # print(user)
         return user
     return None
 
